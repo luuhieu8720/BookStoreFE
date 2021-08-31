@@ -1,10 +1,10 @@
 <template>     
     <div class = "container">  
-		<h2 :style="{textAlign:'center', marginTop:'30px', marginBottom:'30px'}">Danh sách tác giả</h2>
+		<h2 :style="{textAlign:'center', marginTop:'30px', marginBottom:'30px'}">Danh sách thể loại</h2>
 		<table class="table">  
 			<thead>  
 				<th :style="{paddingLeft:'8px'}">Id</th>  
-				<th :style="{paddingLeft:'8px'}">Thể loại</th>  
+				<th :style="{paddingLeft:'8px', minWidth:'100px'}">Thể loại</th>  
 				<th :style="{paddingLeft:'8px'}">Mô tả</th>  
 				<th></th>  
 			</thead>  
@@ -37,7 +37,10 @@ export default {
 	methods: { 
 		getCategories() {
             categoryServices.getCategories().then(response =>
-                this.categories = response.data,
+                {
+					this.categories = response.data,
+					this.categories.forEach(category => category.description = category.description.substring(0, 300) + "...")
+				}
             ).catch(e => {  
 					console.log(e);  })
 		},

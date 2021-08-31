@@ -1,25 +1,25 @@
 <template>
         <div class="container" :style="{marginLeft:'30px'}">
-			<form >
+			<form>
 				<div class="row">
 					<div class="col-md-8 col-md-offset-2">
 						<h3  id="padding-page">Chỉnh sửa thể loại</h3>
                             <div class="form-group">
                                     <label for="name">Mã thể loại<span class="require">*</span></label>
-                                    <input type="text" name="id"  id="padding-bottom-border" :value="category.id"  class="form-control" readonly >
+                                   <input type = "text" name="id" :placeholder="category.id" v-model="category.id" id="padding-bottom-border" class="form-control" readonly />
                             </div>
                              <div class="form-group">
 								<label for="name">Tên thể loại<span class="require">*</span></label>
-								<input type="text" name="name"  id="padding-bottom-border" :value="category.name"  class="form-control" >
+								<input type = "text" name="name" :placeholder="category.name" v-model="category.name" id="padding-bottom-border" class="form-control" />
 							</div>
 							<div class="form-group">
 								<label for="description">Mô tả<span class="require">*</span></label>
-								<input name="description" :value="category.description"  id="padding-bottom-border" class="form-control" />
+								<textarea rows="6" name="description" :placeholder="category.description" v-model="category.description" id="padding-bottom-border" class="form-control" />
 							</div>
 							<div class="form-group">
-								<input type = "submit" class="btn btn-primary" target="__blank" value="Cập nhật" @click="routeToEdit(author.id)"
-								:style="{borderRadius: '10px'}" />
-								<input type = "submit" class="btn default" target="__blank" value="Hủy" @click="goBack()" 
+								<input type = "button" class="btn btn-primary" target="__blank" value="Cập nhật"
+								:style="{borderRadius: '10px'}" @click="updateCategory()" />
+								<input type = "button" class="btn default" target="__blank" value="Hủy" @click="goBack()" 
 								:style="{marginLeft:'10px', border: '1px solid black', borderRadius:'10px'}" />
 							</div> 
                     </div>
@@ -31,40 +31,50 @@
 <script>
 import categoryServices from '@/services/categories.services'
 import store from '@/store'
+import useNotification from "@/logics/notification.logic"
 export default {
     name: 'EditCategory',
     data() {
         return{
             category: [],
-            editedCategory: {
-                name: "",
-                description:""
-            }
+            notification: useNotification()
         }
     },
     created()  
-		{  
+		{ 
 			this.getCategory();  
-		}, 
+		},
     methods: { 
 		getCategory() {
+            this.checkRole();
             categoryServices.getCategory(this.$route.params.id).then(response =>
                 {
 					this.category = response.data,
 					console.log(this.category)
 				}).catch(e => {  
-					console.log(e);  })
+					console.log(e);  
+                })
 		},
-        isInRole(){
-            var role = 0;
-            if (store.state.user != null){
-                role = store.state.user.role;
+        
+        checkRole(){
+            if (store.state.user.role != "Admin") 
+            {
+                alert("Bạn không có quyền truy cập trang!");
+                this.goBack();
             }
-
-            return (role == "Admin" || role == "Manager");
         },
         goBack(){
             this.$router.push("/getcategorybyid/" + this.$route.params.id);
+        },
+        updateCategory(){
+            categoryServices.updateCategory(this.$route.params.id, this.category)
+            .then(() => {
+				this.notification.showMessage("Cập nhật thành công!");
+				this.goBack();
+			})
+			.catch(error => {
+				console.log(error);
+			});
         }
 
 	}  

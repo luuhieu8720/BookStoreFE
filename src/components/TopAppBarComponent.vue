@@ -31,7 +31,6 @@ import LoginModel from "@/models/user/login.model";
 import LoginComponent from "@/components/LoginComponent.vue";
 import useNotification from "@/logics/notification.logic";
 import {useRouter} from "vue-router";
-import store from '@/store';
 
 export default defineComponent({
   components: {
@@ -88,7 +87,7 @@ export default defineComponent({
 
     const doLogout = () => {
 		logout();
-		router.push({name: 'BooksPage'})
+		router.push({ name: 'BooksPage' })
 		notification.showMessage('Bạn đã đăng xuất thành công');
     }
     return {
