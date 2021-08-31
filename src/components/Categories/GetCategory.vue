@@ -33,12 +33,12 @@
                 <hr />
                 <div class="row" :style="{marginTop: '20px',marginBottom: '13px'}">
                     <div class="col-sm-12">
-                    <input type = "submit" :hidden="!isInRole()" class="btn btn-primary" target="__blank" value="Cập nhật" @click="routeToEdit(category.id)"
-                    :style="{borderRadius: '10px'}" />
-                    <input type = "button" :hidden="!isInRole()" class="btn default" target="__blank" value="Xóa" @click="deleteCategory()" 
-                    :style="{marginLeft:'10px', border: '1px solid black', borderRadius:'10px'}" />
-                    <input type = "button" :hidden="isInRole()" class="btn btn-primary" target="__blank" value="Quay lại" @click="goBack()"
-                    :style="{borderRadius: '10px'}" />
+                    <Button type = "submit" :hidden="!isInRole()" class="btn btn-primary" target="__blank" @click="routeToEdit(category.id)"
+                    :style="{borderRadius: '10px'}">Cập nhật</Button>
+                    <Button type = "button" :hidden="!isInRole()" class="btn default" target="__blank" @click="deleteCategory()" 
+                    :style="{marginLeft:'10px', border: '1px solid black', borderRadius:'10px'}" >Xóa</Button>
+                    <Button type = "button" :hidden="isInRole()" class="btn btn-primary" target="__blank" value="Quay lại" @click="goBack()"
+                    :style="{borderRadius: '10px'}" >Quay lại</Button>
                     </div>
                 </div>
             </div>
@@ -49,14 +49,17 @@
 <script>
 import CategoriesServices from '@/services/categories.services'
 import store from '@/store'
+import router from '@/router'
+import { Role } from '@/models/user/role'
 export default {  
 	name: 'GetCategory',  
 		data() {
 			return {
 				category: [],
-                books: []
+                books: [],
 			};
 		},
+
 		created()  
 		{  
 			this.getCategory();  
@@ -73,6 +76,7 @@ export default {
 					console.log(e);  
                 })
 		},
+
         getBookCategory(categoryId){
             CategoriesServices.getBookCategory(categoryId).then(response => {
                 this.books = response.data
@@ -81,33 +85,32 @@ export default {
                 console.log(e);
             })
         },
+
         routeToEdit(categoryId){
-            this.$router.push('/editcategory/' + categoryId); 
+            router.push({ name: 'EditCategory', params: {id: categoryId} });
         },
+
         deleteCategory(){
             if(confirm("Bạn muốn xóa thể loại này?")){
-                CategoriesServices.deleteCategory(this.$route.params.id)
+                CategoriesServices.deleteCategory(this.category.id)
                 .then( () => {
                     alert("Xóa thành công!");
-                    this.$router.push("/categories");
-                })
-                .catch(error => {
-                    console.log(error);
+                    router.push({ name: 'CategoriesPage' });
                 })
             }
             else {
                 this.goBack();
             }
         },
+
         isInRole(){
-            var role = 0;
             if (store.state.user != null){
-                role = store.state.user.role;
+                return (store.state.user.role == Role.Admin);
             }
-            return (role == "Admin");
         },
+
         goBack(){
-            this.$router.push("/categories");
+            router.push({ name: "CategoriesPage" });
         },
         
 	} 
