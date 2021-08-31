@@ -1,26 +1,25 @@
 <template>
         <div class="container" :style="{marginLeft:'30px'}">
-			<form >
+			<form>
 				<div class="row">
 					<div class="col-md-8 col-md-offset-2">
 						<h3  id="padding-page">Chỉnh sửa tác giả</h3>
+                            <div class="form-group">
+                                    <label for="name">Mã tác giả<span class="require">*</span></label>
+                                   <input type = "text" name="id" :placeholder="author.id" v-model="author.id" id="padding-bottom-border" class="form-control" readonly />
+                            </div>
                              <div class="form-group">
 								<label for="name">Tên tác giả<span class="require">*</span></label>
-								<input type="text" name="name"  id="padding-bottom-border" :value="author.name"  class="form-control" >
+								<input type = "text" name="name" :placeholder="author.name" v-model="author.name" id="padding-bottom-border" class="form-control" />
 							</div>
 							<div class="form-group">
-								<label for="description">Ngày sinh<span class="require">*</span></label>
-								<input type="date" name="birthday" :value="author.birthday"  id="padding-bottom-border" class="form-control" />
-							</div>
-							
-							<div class="form-group">
-								<label for="price">Website<span class="require">*</span></label>
-								<input type = "text" name="website" :value="author.website" id="padding-bottom-border" class="form-control" />
+								<label for="birthday">Ngày sinh<span class="require">*</span></label>
+								<input type="date" name="description"  v-model="author.birthday" id="padding-bottom-border" class="form-control" />
 							</div>
 							<div class="form-group">
-								<input type = "submit" class="btn btn-primary" target="__blank" value="Cập nhật" @click="routeToEdit(author.id)"
-								:style="{borderRadius: '10px'}" />
-								<input type = "submit" class="btn default" target="__blank" value="Hủy" @click="goBack()" 
+								<input type = "button" class="btn btn-primary" target="__blank" value="Cập nhật"
+								:style="{borderRadius: '10px'}" @click="updateAuthor()" />
+								<input type = "button" class="btn default" target="__blank" value="Hủy" @click="goBack()" 
 								:style="{marginLeft:'10px', border: '1px solid black', borderRadius:'10px'}" />
 							</div> 
                     </div>
@@ -30,46 +29,54 @@
 
 </template>
 <script>
-import AuthorServices from '@/services/authors.services'
+import authorServices from '@/services/authors.services'
 import store from '@/store'
-import momment from 'moment'
+import useNotification from "@/logics/notification.logic"
+import moment from 'moment'
 export default {
     name: 'EditAuthor',
     data() {
         return{
             author: [],
-            editedAuthor: {
-                name: "",
-                birthday: "",
-                website: ""
-            }
+            notification: useNotification()
         }
     },
     created()  
-		{  
+		{ 
 			this.getAuthor();  
-		}, 
+		},
     methods: { 
 		getAuthor() {
-            AuthorServices.getAuthor(this.$route.params.id).then(response =>
+            this.checkRole();
+            authorServices.getAuthor(this.$route.params.id).then(response =>
                 {
 					this.author = response.data,
-					this.author.birthday = momment().format('YYYY-MM-DD'),
+					this.author.birthday =  moment(String(this.author.birthday)).format('YYYY-MM-DD')
 					console.log(this.author)
 				}).catch(e => {  
-					console.log(e);  })
+					console.log(e);  
+                })
 		},
-        isInRole(){
-            var role = 0;
-            if (store.state.user != null){
-                role = store.state.user.role;
+        
+        checkRole(){
+            if (store.state.user.role != "Admin") 
+            {
+                alert("Bạn không có quyền truy cập trang!");
+                this.goBack();
             }
-
-            if (role == "Admin") return true;
-            return false;
         },
         goBack(){
             this.$router.push("/getauthorbyid/" + this.$route.params.id);
+        },
+        updateAuthor(){
+            authorServices.updateAuthor(this.$route.params.id, this.author)
+            .then(() => {
+				this.notification.showMessage("Cập nhật thành công!");
+				this.goBack();
+			})
+			.catch(error => {
+				console.log(error);
+			});
         }
 
 	}  

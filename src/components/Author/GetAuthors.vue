@@ -42,8 +42,7 @@ export default {
             authorsServices.getAuthors().then(response =>
                 {
 					this.authors = response.data,
-					this.authors.forEach(author => author.birthday =  moment(String(author.birthday)).format('DD/MM/YYYY')),
-					console.log(this.authors)
+					this.authors.forEach(author => author.birthday =  moment(String(author.birthday)).format('DD/MM/YYYY'))
 				}).catch(e => {  
 					console.log(e);  })
 		},

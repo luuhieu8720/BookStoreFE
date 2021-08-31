@@ -32,10 +32,12 @@
                 <hr />
                 <div class="row" :style="{marginTop: '20px',marginBottom: '13px'}">
                     <div class="col-sm-12">
-                    <input type = "submit" class="btn btn-primary" target="__blank" value="Cập nhật" @click="routeToEdit(author.id)"
+                    <input type = "submit" :hidden="!isInRole()" class="btn btn-primary" target="__blank" value="Cập nhật" @click="routeToEdit(author.id)"
                     :style="{borderRadius: '10px'}" />
-                    <input type = "submit" class="btn default" target="__blank" value="Xóa" @click="deleteAuthor()" 
+                    <input type = "button" :hidden="!isInRole()" class="btn default" target="__blank" value="Xóa" @click="deleteAuthor()" 
                     :style="{marginLeft:'10px', border: '1px solid black', borderRadius:'10px'}" />
+                    <input type = "button" :hidden="isInRole()" class="btn btn-primary" target="__blank" value="Quay lại" @click="goBack()"
+                    :style="{borderRadius: '10px'}" />
                     </div>
                 </div>
             </div>
@@ -45,7 +47,8 @@
 
 <script>
 import authorsServices from '@/services/authors.services';
-import momment from 'moment'
+import moment from 'moment'
+import store from '@/store'
 export default {  
 	name: 'GetAuthor',  
 		data() {
@@ -63,14 +66,16 @@ export default {
             authorsServices.getAuthor(this.$route.params.id).then(response =>
                 {
 					this.author = response.data,
-					this.author.birthday = momment().format('YYYY/MM/DD'),
+					this.author.birthday = moment(String(this.author.birthday)).format('DD/MM/YYYY'),
 					console.log(this.author)
 				}).catch(e => {  
 					console.log(e);  })
 		},
+
         routeToEdit(authorId){
             this.$router.push('/editauthor/' + authorId); 
         },
+
         deleteAuthor(){
             if(confirm("Bạn muốn xóa tác giả này?")){
                 authorsServices.deleteAuthor(this.$route.params.id)
@@ -83,10 +88,22 @@ export default {
                 })
             }
             else {
-                window.location.reload();
+                this.goBack();
             }
-        }
+        },
 
+        isInRole(){
+            var role = 0;
+            if (store.state.user != null){
+                role = store.state.user.role;
+            }
+
+            return (role == "Admin");
+        },
+        
+        goBack(){
+            this.$router.push("/authors");
+        },
 	} 
 } 
 </script>
