@@ -20,6 +20,9 @@ import router from './router'
 import store from './store'
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Card from 'primevue/card';
 
 const app = createApp(App);
 
@@ -32,5 +35,8 @@ app.component('InputText', InputText);
 app.component('Button', Button);
 app.component('Password', Password);
 app.component('Dialog', Dialog);
+app.component('DataTable', DataTable);
+app.component('Column', Column);
+app.component('Card', Card);
 
 app.mount('#app')
