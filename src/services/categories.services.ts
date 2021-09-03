@@ -1,20 +1,21 @@
 import {api} from "@/boot/axios";
+import CategoryItem from "@/models/category/categories";
 
 export default new class {
     private readonly category = 'categories';
-    getCategory(id: number){
-        return api.get(`${this.category}${"/"}${id.toString()}`)
+    getCategory(id: string){
+        return api.get(`${this.category}${"/"}${id}`)
     }
     getCategories(){
         return api.get(this.category);
     }
-    getBookCategory(categoryId: number){
-        return api.get(`${this.category}${"/"}${categoryId.toString()}${"/books"}`)
+    getBookCategory(categoryId: string){
+        return api.get(`${this.category}${"/"}${categoryId}${"/books"}`)
     }
-    deleteCategory(id: number){
-        return api.delete(`${this.category}${"/"}${id.toString()}`);
+    deleteCategory(id: string){
+        return api.delete(`${this.category}${"/"}${id}`);
     }
-    updateCategory(id: number, category: unknown){
-        return api.put(`${this.category}${"/"}${id.toString()}`, category)
+    updateCategory(id: string, category: unknown){
+        return api.put(`${this.category}${"/"}${id}`, category)
     }
 }

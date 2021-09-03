@@ -1,17 +1,18 @@
 import AuthsService from '@/services/auths.service'
-import {useStore} from "vuex";
+import { useStore } from "vuex";
 import LoginModel from "@/models/user/login.model";
-import {CLEAR_TOKEN, SET_TOKEN, SET_USER} from "@/store";
-import {computed} from "vue";
-import {UserDetail} from "@/models/user/user.detail";
+import { CLEAR_TOKEN, SET_TOKEN, SET_USER } from "@/store";
+import { computed } from "vue";
+import { UserDetail } from "@/models/user/user.detail";
 
 export function useAuths() {
     const store = useStore()
-    const currentUser = computed(() => store.state.user as UserDetail| null)
+    const currentUser = computed(() => store.state.user as UserDetail | null)
 
     const getCurrentUser = () => {
         AuthsService.getUser().then(response => {
             store.commit(SET_USER, response.data)
+            localStorage.setItem('role', response.data.role);
         });
     }
 
@@ -24,12 +25,13 @@ export function useAuths() {
     }
 
     const loginValid = (form: LoginModel) => {
-      return  form.username && form.password;
+        return form.username && form.password;
     }
 
     const logout = () => {
         store.commit(CLEAR_TOKEN);
         store.commit(SET_USER, null);
+        localStorage.removeItem('role');
     }
 
     return {

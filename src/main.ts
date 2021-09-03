@@ -6,7 +6,6 @@ import 'primeicons/primeicons.css';
 import 'prismjs/themes/prism-coy.css';
 import 'typeface-roboto/index.css';
 import '/public/CSS/bootstrap.css'
-import '/public/CSS/carousel.css'
 
 import Button from "primevue/button";
 import Password from "primevue/password";
