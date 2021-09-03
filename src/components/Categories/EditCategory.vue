@@ -20,13 +20,7 @@
           </div>
           <div class="form-group">
             <label for="description">Mô tả<span class="require">*</span></label>
-            <textarea
-              rows="6"
-              name="description"
-              :placeholder="category.description"
-              v-model="category.description"
-              class="form-control"
-            />
+            <Editor v-model="category.description" editorStyle="height: 320px"/>
           </div>
           <div class="form-group">
             <Button
@@ -56,7 +50,11 @@ import useNotification from "@/logics/notification.logic";
 import { defineComponent, ref, onMounted } from "@vue/runtime-core";
 import CategoryItem from "@/models/category/categories";
 import { useRoute } from "vue-router";
+import Editor from 'primevue/editor';
 export default defineComponent({
+	components: {
+		Editor
+	},
   setup() {
     const category = ref({} as CategoryItem);
     const disabled = true;
