@@ -1,90 +1,96 @@
 <template>
-	<div class="container" :style="{marginLeft:'30px'}">
-		<form>
-			<div class="row">
-				<div class="col-md-8 col-md-offset-2">
-					<h3  id="padding-page">Chỉnh sửa tác giả</h3>
-						<div class="form-group">
-								<label for="name">Mã tác giả<span class="require">*</span></label>
-								<input type = "text" name="id" :placeholder="author.id" v-model="author.id" id="padding-bottom-border" class="form-control" readonly />
-						</div>
-							<div class="form-group">
-							<label for="name">Tên tác giả<span class="require">*</span></label>
-							<input type = "text" name="name" :placeholder="author.name" v-model="author.name" id="padding-bottom-border" class="form-control" />
-						</div>
-						<div class="form-group">
-							<label for="birthday">Ngày sinh<span class="require">*</span></label>
-							<input type="date" name="description"  v-model="author.birthday" id="padding-bottom-border" class="form-control" />
-						</div>
-						<div class="form-group">
-							<input type = "button" class="btn btn-primary" target="__blank" value="Cập nhật"
-							:style="{borderRadius: '10px'}" @click="updateAuthor()" />
-							<input type = "button" class="btn default" target="__blank" value="Hủy" @click="goBack()" 
-							:style="{marginLeft:'10px', border: '1px solid black', borderRadius:'10px'}" />
-						</div> 
-				</div>
-			</div>
-		</form>
-	</div>
-
+  <div class="container" :style="{ marginLeft: '30px' }">
+    <form>
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+          <h3 id="padding-page">Chỉnh sửa tác giả</h3>
+          <div class="form-group" :style="{ marginTop: '40px' }">
+            <span class="p-float-label">
+              <InputText id="id" type="text" v-model="author.id" disabled />
+              <label for="id" :style="{ fontSize: '15px' }">Mã tác giả</label>
+            </span>
+          </div>
+          <div class="form-group" :style="{ marginTop: '40px' }">
+            <span class="p-float-label">
+              <InputText id="name" type="text" v-model="author.name" />
+              <label for="name" :style="{ fontSize: '15px' }"
+                >Tên tác giả</label
+              >
+            </span>
+          </div>
+          <div class="form-group" :style="{ marginTop: '40px' }">
+            <div class="p-float-label">
+              <Calendar id="date" v-model="author.birthday" :showIcon="true" />
+              <label for="date" :style="{ fontSize: '15px' }">Ngày sinh</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <Button
+              class="btn btn-primary"
+              label="Cập nhật"
+              :style="{ borderRadius: '10px' }"
+              @click="updateAuthor()"
+            />
+            <router-link :to="{ name: 'GetAuthor', params: { id: authorId } }">
+              <Button
+                class="btn btn-secondary"
+                :style="{ borderRadius: '10px', marginLeft: '10px' }"
+                label="Quay lại"
+              />
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </template>
-<script>
-import authorServices from '@/services/authors.services'
-import store from '@/store'
-import useNotification from "@/logics/notification.logic"
-import moment from 'moment'
-export default {
-    name: 'EditAuthor',
-    data() {
-        return{
-            author: [],
-            notification: useNotification()
-        }
-    },
-    created()  
-		{ 
-			this.getAuthor();  
-		},
-    methods: { 
-		getAuthor() {
-            this.checkRole();
-            authorServices.getAuthor(this.$route.params.id).then(response =>
-                {
-					this.author = response.data,
-					this.author.birthday =  moment(String(this.author.birthday)).format('YYYY-MM-DD')
-					console.log(this.author)
-				}).catch(e => {  
-					console.log(e);  
-                })
-		},
-        
-        checkRole(){
-            if (store.state.user.role != "Admin") 
-            {
-                alert("Bạn không có quyền truy cập trang!");
-                this.goBack();
-            }
-        },
-        goBack(){
-            this.$router.push("/getauthorbyid/" + this.$route.params.id);
-        },
-        updateAuthor(){
-            authorServices.updateAuthor(this.$route.params.id, this.author)
-            .then(() => {
-				this.notification.showMessage("Cập nhật thành công!");
-				this.goBack();
-			})
-			.catch(error => {
-				console.log(error);
-			});
-        }
-
-	}  
-}
+<script lang="ts">
+import authorServices from "@/services/authors.services";
+import useNotification from "@/logics/notification.logic";
+import moment from "moment";
+import { defineComponent, ref, onMounted } from "@vue/runtime-core";
+import AuthorItem from "@/models/author/author";
+import { useRoute } from "vue-router";
+import Calendar from "primevue/calendar";
+export default defineComponent({
+  components: {
+    Calendar,
+  },
+  setup() {
+    const author = ref({} as AuthorItem);
+    const route = useRoute();
+    const notification = useNotification();
+    var authorId = route.params.id.toString();
+    const isLoading = ref(false);
+    const updateAuthor = () => {
+      isLoading.value = true;
+      authorServices
+        .updateAuthor(authorId, author.value)
+        .then(() => {
+          notification.showMessage("Cập nhật thành công!");
+        })
+        .finally(() => (isLoading.value = false));
+    };
+    onMounted(() => {
+      authorServices.getAuthor(authorId).then((response) => {
+        (author.value = response.data),
+          (author.value.birthday = moment(String(author.value.birthday)).format(
+            "YYYY-MM-DD"
+          ));
+      });
+    });
+    return {
+      author,
+      isLoading,
+      updateAuthor,
+      authorId,
+    };
+  },
+});
 </script>
 
 <style scoped>
-    #padding-page {
-        margin-top: 40px;
-    }
+#padding-page {
+  margin-top: 40px;
+}
 </style>

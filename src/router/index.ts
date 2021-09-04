@@ -43,7 +43,7 @@ const routes: Array<RouteRecordRaw> = [
     component: EditBook
   },
   {
-    path: '/getauthorbyid/:id',
+    path: '/authors/:id',
     name: 'GetAuthor',
     component: GetAuthor
   },

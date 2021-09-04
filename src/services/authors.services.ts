@@ -1,18 +1,17 @@
 import {api} from "@/boot/axios";
-import authHeader from "@/models/user/auths.header";
 
 export default new class {
     private readonly author = 'authors';
-    getAuthor(id: number){
-        return api.get(this.author + "/" + id.toString())
+    getAuthor(authorId: string){
+        return api.get(`${this.author}${"/"}${authorId}`)
     }
     getAuthors(){
         return api.get(this.author);
     }
-    deleteAuthor(authorId: number){
-        return api.delete(this.author + "/" + authorId.toString(), { headers: authHeader()});
+    deleteAuthor(authorId: string){
+        return api.delete(`${this.author}${"/"}${authorId}`);
     }
-    updateAuthor(authorId: number, authorItem: unknown){
-        return api.put(this.author + "/" + authorId.toString(), authorItem, { headers: authHeader()});
+    updateAuthor(authorId: string, authorItem: unknown){
+        return api.put(`${this.author}${"/"}${authorId}`, authorItem);
     }
 }
