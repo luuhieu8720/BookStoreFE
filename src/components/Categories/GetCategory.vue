@@ -46,13 +46,13 @@
             >
               <Button class="btn btn-primary rounded-4" label="Cập nhật" />
             </router-link>
-            <router-link
-              :to="{ name: 'CategoriesPage' }"
+
+            <Button
+              class="btn btn-secondary mx-2 rounded-4"
+              label="Xóa"
               @click="deleteCategory()"
               :hidden="!isInRole()"
-            >
-              <Button class="btn btn-secondary mx-2 rounded-4" label="Xóa" />
-            </router-link>
+            />
 
             <router-link :to="{ name: 'CategoriesPage' }" :hidden="isInRole()">
               <Button class="btn btn-primary" label="Quay lại" />
