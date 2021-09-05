@@ -1,40 +1,33 @@
 <template>
-  <div class="container" :style="{ marginLeft: '30px' }">
+  <div class="container">
     <form>
-      <div class="row">
+      <div class="row p-m-2">
         <div class="col-md-8 col-md-offset-2">
-          <h3 id="padding-page">Chỉnh sửa thể loại</h3>
-          <div class="form-group" :style="{ marginTop: '40px' }">
+          <h4 class="mt-3 mb-3">Chỉnh sửa thể loại</h4>
+          <div class="form-group">
             <span class="p-float-label">
-              <InputText id="id" type="text" v-model="category.id" disabled />
-              <label for="id" :style="{ fontSize: '15px' }">Mã thể loại</label>
-            </span>
-          </div>
-          <div class="form-group" :style="{ marginTop: '40px' }">
-            <span class="p-float-label">
+              <h6>Tên thể loại</h6>
               <InputText id="name" type="text" v-model="category.name" />
-              <label for="name" :style="{ fontSize: '15px' }"
-                >Tên thể loại</label
-              >
             </span>
           </div>
           <div class="form-group">
-            <label for="description">Mô tả<span class="require">*</span></label>
-            <Editor v-model="category.description" editorStyle="height: 320px"/>
+            <h6>Mô tả</h6>
+            <Editor
+              v-model="category.description"
+              editorStyle="height: 320px"
+            />
           </div>
           <div class="form-group">
             <Button
-              class="btn btn-primary"
+              class="btn btn-primary rounded-4"
               label="Cập nhật"
-              :style="{ borderRadius: '10px' }"
               @click="updateCategory()"
             />
             <router-link
               :to="{ name: 'GetCategory', params: { id: categoryId } }"
             >
               <Button
-                class="btn btn-secondary"
-                :style="{ borderRadius: '10px', marginLeft: '10px' }"
+                class="btn btn-secondary rounded-4 p-m-2"
                 label="Quay lại"
               />
             </router-link>
@@ -50,14 +43,13 @@ import useNotification from "@/logics/notification.logic";
 import { defineComponent, ref, onMounted } from "@vue/runtime-core";
 import CategoryItem from "@/models/category/categories";
 import { useRoute } from "vue-router";
-import Editor from 'primevue/editor';
+import Editor from "primevue/editor";
 export default defineComponent({
-	components: {
-		Editor
-	},
+  components: {
+    Editor,
+  },
   setup() {
     const category = ref({} as CategoryItem);
-    const disabled = true;
     const notification = useNotification();
     const route = useRoute();
     const categoryId = route.params.id.toString();
@@ -83,19 +75,10 @@ export default defineComponent({
       categoryId,
       isLoading,
       updateCategory,
-      disabled,
     };
   },
 });
 </script>
 
 <style scoped>
-#padding-page {
-  margin-top: 40px;
-}
-.btn-secondary:hover {
-  color: #fff;
-  background-color: #5c636a;
-  border-color: #565e64;
-}
 </style>

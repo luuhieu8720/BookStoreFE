@@ -1,11 +1,13 @@
 <template>
-  <div class="container">
-    <h2 :style="{ textAlign: 'center', marginTop: '30px' }">
-      Chi tiết thể loại
-    </h2>
-    <form>
+  <Card>
+    <template #title>
+      <div class="p-d-flex p-jc-center">
+        <div>Chi tiết thể loại</div>
+      </div>
+    </template>
+    <template #content>
       <div class="card-body">
-        <div class="row" :style="{ marginBottom: '18px' }">
+        <div class="row p-m-2">
           <div class="col-sm-3">
             <h6 class="mb-0">Tên thể loại</h6>
           </div>
@@ -16,7 +18,7 @@
           </div>
         </div>
         <hr />
-        <div class="row" :style="{ marginTop: '18px', marginBottom: '18px' }">
+        <div class="row p-m-2">
           <div class="col-sm-3">
             <h6 class="mb-0">Mô tả</h6>
           </div>
@@ -27,18 +29,28 @@
           </div>
         </div>
         <hr />
-        <div class="row" :style="{ marginTop: '18px', marginBottom: '18px' }">
+        <div class="row p-m-2">
           <div class="col-sm-3">
             <h6 class="mb-0">Các sách thuộc thể loại này</h6>
           </div>
           <div class="col-sm-9 text-secondary">
-            <p class="text-secondary" v-for="item in books" :key="item.id">
-              {{ item.name }}
-            </p>
+            <DataView :value="books">
+              <template #list="slotProps">
+                <div class="p-col-12">
+                  <div class="car-details">
+                    <div>
+                      <div class="p-grid">
+                        <p>{{ slotProps.data.name }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </DataView>
           </div>
         </div>
         <hr />
-        <div class="row" :style="{ marginTop: '20px', marginBottom: '13px' }">
+        <div class="row">
           <div class="col-sm-12">
             <router-link
               :to="{ name: 'EditCategory', params: { id: category.id } }"
@@ -60,8 +72,8 @@
           </div>
         </div>
       </div>
-    </form>
-  </div>
+    </template>
+  </Card>
 </template>  
 
 <script lang="ts">
@@ -73,8 +85,14 @@ import { defineComponent, ref, onMounted } from "@vue/runtime-core";
 import CategoryItem from "@/models/category/categories";
 import BookItem from "@/models/book/books";
 import { useRoute } from "vue-router";
+import Card from "primevue/card";
+import DataView from "primevue/dataview";
 
 export default defineComponent({
+  components: {
+    Card,
+    DataView,
+  },
   setup() {
     const category = ref({} as CategoryItem);
     const books = ref([] as BookItem[]);
@@ -125,9 +143,4 @@ export default defineComponent({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.btn-secondary:hover {
-  color: #fff;
-  background-color: #5c636a;
-  border-color: #565e64;
-}
 </style>

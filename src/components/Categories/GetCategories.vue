@@ -1,22 +1,24 @@
 <template>
   <Card>
     <template #title>
-      <div style="text-align: center">Danh sách thể loại</div>
+      <div class="p-d-flex p-jc-center">
+        <div>Danh sách thể loại</div>
+      </div>
     </template>
     <template #content>
-      <DataTable :value="categories">
-        <Column field="id" header="ID" style="width: 70px" />
+      <DataTable :value="categories" :autoLayout="true">
+        <Column field="id" header="ID" />
 
-        <Column field="name" header="Thể loại" style="width: 150px" />
+        <Column field="name" header="Thể loại" />
 
-        <Column field="description" header="Mô tả" style="width: 550px" />
+        <Column field="description" header="Mô tả" />
 
         <Column field="id" header="Chi tiết">
           <template #body="slotProps">
             <router-link
               :to="{ name: 'GetCategory', params: { id: slotProps.data.id } }"
             >
-              <Button class="btn btn-primary" label="Chi tiết" />
+              <Button class="btn btn-primary" label="Xem" />
             </router-link>
           </template>
         </Column>
