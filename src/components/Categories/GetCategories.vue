@@ -36,6 +36,7 @@ export default defineComponent({
   setup() {
     const categories = ref([] as CategoryItem[]);
     const isLoading = ref(false);
+
     onMounted(() => {
       isLoading.value = true;
       categoryServices
@@ -47,6 +48,7 @@ export default defineComponent({
           isLoading.value = false;
         });
     });
+
     return {
       categories,
       isLoading,

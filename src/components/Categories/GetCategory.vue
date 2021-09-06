@@ -5,6 +5,7 @@
         <div>Chi tiết thể loại</div>
       </div>
     </template>
+
     <template #content>
       <div class="card-body">
         <div class="row p-m-2">
@@ -50,28 +51,31 @@
           </div>
         </div>
         <hr />
-        <div class="row">
-          <div class="col-sm-12">
-            <router-link
-              :to="{ name: 'EditCategory', params: { id: category.id } }"
-              :hidden="!isInRole()"
-            >
-              <Button class="btn btn-primary rounded-4" label="Cập nhật" />
-            </router-link>
-
-            <Button
-              class="btn btn-secondary mx-2 rounded-4"
-              label="Xóa"
-              @click="deleteCategory()"
-              :hidden="!isInRole()"
-            />
-
-            <router-link :to="{ name: 'CategoriesPage' }" :hidden="isInRole()">
-              <Button class="btn btn-primary" label="Quay lại" />
-            </router-link>
-          </div>
-        </div>
       </div>
+    </template>
+
+    <template #footer>
+      <router-link
+        class="text-decoration-none"
+        :to="{ name: 'EditCategory', params: { id: category.id } }"
+        :hidden="!isInRole()"
+      >
+        <Button icon="pi pi-play" label="Cập nhật" />
+      </router-link>
+      <Button
+        icon="pi pi-times"
+        label="Xóa"
+        class="p-button-secondary mx-2"
+        @click="deleteCategory()"
+        :hidden="!isInRole()"
+      />
+
+      <router-link
+        :to="{ name: 'CategoriesPage' }"
+        class="text-decoration-none"
+      >
+        <Button class="btn-light border-dark" label="Quay lại" />
+      </router-link>
     </template>
   </Card>
 </template>  
@@ -107,7 +111,7 @@ export default defineComponent({
 
     const deleteCategory = () => {
       if (confirm("Bạn muốn xóa thể loại này?")) {
-        CategoriesServices.deleteCategory(categoryId).then(() => {
+        CategoriesServices.delete(categoryId).then(() => {
           alert("Xóa thành công!");
           router.push({ name: "CategoriesPage" });
         });
@@ -116,14 +120,14 @@ export default defineComponent({
 
     onMounted(() => {
       isLoading.value = true;
-      CategoriesServices.getCategory(categoryId)
+      CategoriesServices.get(categoryId)
         .then((response) => {
           category.value = response.data;
         })
         .finally(() => {
           isLoading.value = false;
         });
-      CategoriesServices.getBookCategory(categoryId)
+      CategoriesServices.getBooks(categoryId)
         .then((response) => {
           books.value = response.data;
         })
@@ -131,6 +135,7 @@ export default defineComponent({
           console.log(e);
         });
     });
+
     return {
       category,
       books,
