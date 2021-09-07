@@ -1,7 +1,7 @@
 import AuthsService from '@/services/auths.service'
 import { useStore } from "vuex";
 import LoginModel from "@/models/user/login.model";
-import { CLEAR_TOKEN, SET_TOKEN, SET_USER } from "@/store";
+import { CLEAR_TOKEN, CLEAR_USER, SET_TOKEN, SET_USER } from "@/store";
 import { computed } from "vue";
 import { UserDetail } from "@/models/user/user.detail";
 
@@ -12,7 +12,6 @@ export function useAuths() {
     const getCurrentUser = () => {
         AuthsService.getUser().then(response => {
             store.commit(SET_USER, response.data)
-            localStorage.setItem('role', response.data.role);
         });
     }
 
@@ -30,8 +29,7 @@ export function useAuths() {
 
     const logout = () => {
         store.commit(CLEAR_TOKEN);
-        store.commit(SET_USER, null);
-        localStorage.removeItem('role');
+        store.commit(CLEAR_USER);
     }
 
     return {

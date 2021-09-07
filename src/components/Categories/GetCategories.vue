@@ -16,7 +16,10 @@
         <Column field="id" header="Chi tiết">
           <template #body="slotProps">
             <router-link
-              :to="{ name: 'GetCategory', params: { id: slotProps.data.id } }"
+              :to="{
+                name: 'CategoryDetail',
+                params: { id: slotProps.data.id },
+              }"
             >
               <Button class="btn btn-primary" label="Xem" />
             </router-link>
@@ -41,12 +44,8 @@ export default defineComponent({
       isLoading.value = true;
       categoryServices
         .getCategories()
-        .then((response) => {
-          categories.value = response.data;
-        })
-        .finally(() => {
-          isLoading.value = false;
-        });
+        .then((response) => (categories.value = response.data))
+        .finally(() => (isLoading.value = false));
     });
 
     return {

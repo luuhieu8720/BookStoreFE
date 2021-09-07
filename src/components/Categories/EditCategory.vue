@@ -29,10 +29,10 @@
         @click="updateCategory()"
       />
       <router-link
-        :to="{ name: 'GetCategory', params: { id: categoryId } }"
-        class="text-decoration-none"
+        :to="{ name: 'CategoryDetail', params: { id: categoryId } }"
+        class="text-decoration-none mx-2"
       >
-        <Button class="p-button-secondary mx-2" label="Quay lại" />
+        <Button class="p-button-secondary" label="Quay lại" />
       </router-link>
     </template>
   </Card>
@@ -45,6 +45,7 @@ import CategoryItem from "@/models/category/categories";
 import { useRoute } from "vue-router";
 import Editor from "primevue/editor";
 import Card from "primevue/card";
+
 export default defineComponent({
   components: {
     Editor,
@@ -58,23 +59,17 @@ export default defineComponent({
     const categoryId = route.params.id.toString();
     const isLoading = ref(false);
     const updateCategory = () => {
-      console.log(category.value.description);
-      categoryServices.update(categoryId, category.value).then(() => {
-        notification.showMessage("Cập nhật thành công!");
-        console.log(category.value.description);
-      });
+      categoryServices
+        .update(categoryId, category.value)
+        .then(() => notification.showMessage("Cập nhật thành công!"));
     };
 
     onMounted(() => {
       isLoading.value = true;
       categoryServices
         .get(categoryId)
-        .then((response) => {
-          category.value = response.data;
-        })
-        .finally(() => {
-          isLoading.value = false;
-        });
+        .then((response) => (category.value = response.data))
+        .finally(() => (isLoading.value = false));
     });
 
     return {

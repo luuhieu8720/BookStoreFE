@@ -57,11 +57,17 @@
     <template #footer>
       <router-link
         class="text-decoration-none"
-        :to="{ name: 'EditCategory', params: { id: category.id } }"
+        :to="{ name: 'CategoryEdit', params: { id: category.id } }"
         :hidden="!isInRole()"
       >
-        <Button icon="pi pi-play" label="Cập nhật" />
+        <Button
+          icon="pi pi-play"
+          class="p-button-primary ms-4"
+          label="Cập nhật"
+        />
       </router-link>
+
+      <ConfirmDialog></ConfirmDialog>
       <Button
         icon="pi pi-times"
         label="Xóa"
@@ -91,11 +97,15 @@ import BookItem from "@/models/book/books";
 import { useRoute } from "vue-router";
 import Card from "primevue/card";
 import DataView from "primevue/dataview";
+import ConfirmDialog from "primevue/confirmdialog";
+import useNotification from "@/logics/notification.logic";
+import { useConfirm } from "primevue/useconfirm";
 
 export default defineComponent({
   components: {
     Card,
     DataView,
+    ConfirmDialog,
   },
   setup() {
     const category = ref({} as CategoryItem);
@@ -103,37 +113,35 @@ export default defineComponent({
     const route = useRoute();
     var categoryId = route.params.id.toString();
     const isLoading = ref(false);
+    const notification = useNotification();
     const isInRole = () => {
-      if (store.state.user != null) {
-        return store.state.user.role == Role.Admin;
-      }
+      return store.state.user?.role == Role.Admin;
     };
 
+    const confirm = useConfirm();
+
     const deleteCategory = () => {
-      if (confirm("Bạn muốn xóa thể loại này?")) {
-        CategoriesServices.delete(categoryId).then(() => {
-          alert("Xóa thành công!");
-          router.push({ name: "CategoriesPage" });
-        });
-      }
+      confirm.require({
+        message: "Bạn muốn xóa thể loại này?",
+        header: "Xác nhận chỉnh sửa",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => {
+          CategoriesServices.delete(categoryId).then(() => {
+            notification.showMessage("Xóa thành công!");
+            router.push({ name: "CategoriesPage" });
+          });
+        },
+      });
     };
 
     onMounted(() => {
       isLoading.value = true;
       CategoriesServices.get(categoryId)
-        .then((response) => {
-          category.value = response.data;
-        })
-        .finally(() => {
-          isLoading.value = false;
-        });
-      CategoriesServices.getBooks(categoryId)
-        .then((response) => {
-          books.value = response.data;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+        .then((response) => (category.value = response.data))
+        .finally(() => (isLoading.value = false));
+      CategoriesServices.getBooks(categoryId).then(
+        (response) => (books.value = response.data)
+      );
     });
 
     return {
@@ -149,3 +157,4 @@ export default defineComponent({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>
+
