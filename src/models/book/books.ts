@@ -3,5 +3,6 @@ export default interface BookItem{
     name: string,
     year: number,
     price: number,
-    author_id: number
+    author_id: number,
+    author_name: string
 }

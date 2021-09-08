@@ -1,78 +1,86 @@
 <template>
-        <div class="container" :style="{marginLeft:'30px'}">
-			<form >
-				<div class="row">
-					<div class="col-md-8 col-md-offset-2">
-						<h3  id="padding-page">Chỉnh sửa thể loại</h3>
-                            <div class="form-group">
-                                    <label for="name">Mã thể loại<span class="require">*</span></label>
-                                    <input type="text" name="id"  id="padding-bottom-border" :value="category.id"  class="form-control" readonly >
-                            </div>
-                             <div class="form-group">
-								<label for="name">Tên thể loại<span class="require">*</span></label>
-								<input type="text" name="name"  id="padding-bottom-border" :value="category.name"  class="form-control" >
-							</div>
-							<div class="form-group">
-								<label for="description">Mô tả<span class="require">*</span></label>
-								<input name="description" :value="category.description"  id="padding-bottom-border" class="form-control" />
-							</div>
-							<div class="form-group">
-								<input type = "submit" class="btn btn-primary" target="__blank" value="Cập nhật" @click="routeToEdit(author.id)"
-								:style="{borderRadius: '10px'}" />
-								<input type = "submit" class="btn default" target="__blank" value="Hủy" @click="goBack()" 
-								:style="{marginLeft:'10px', border: '1px solid black', borderRadius:'10px'}" />
-							</div> 
-                    </div>
-                </div>
-			</form>
-		</div>
-
+  <Card>
+    <template #title>
+      <div class="p-d-flex p-jc-left ms-3 mt-1">
+        <div>Chỉnh sửa thể loại</div>
+      </div>
+    </template>
+    <template #content>
+      <div class="row p-m-2">
+        <div class="col-md-8 col-md-offset-2">
+          <div class="form-group">
+            <span class="p-float-label">
+              <h6>Tên thể loại</h6>
+              <InputText id="name" type="text" v-model="category.name" />
+            </span>
+          </div>
+          <div class="form-group">
+            <h6>Mô tả</h6>
+            <Editor v-model="category.description" />
+          </div>
+        </div>
+      </div>
+    </template>
+    <template #footer>
+      <Button
+        class="ms-4"
+        icon="pi pi-check"
+        label="Lưu"
+        @click="updateCategory()"
+      />
+      <router-link
+        :to="{ name: 'CategoryDetail', params: { id: categoryId } }"
+        class="text-decoration-none mx-2"
+      >
+        <Button class="p-button-secondary" label="Quay lại" />
+      </router-link>
+    </template>
+  </Card>
 </template>
-<script>
-import categoryServices from '@/services/categories.services'
-import store from '@/store'
-export default {
-    name: 'EditCategory',
-    data() {
-        return{
-            category: [],
-            editedCategory: {
-                name: "",
-                description:""
-            }
-        }
-    },
-    created()  
-		{  
-			this.getCategory();  
-		}, 
-    methods: { 
-		getCategory() {
-            categoryServices.getCategory(this.$route.params.id).then(response =>
-                {
-					this.category = response.data,
-					console.log(this.category)
-				}).catch(e => {  
-					console.log(e);  })
-		},
-        isInRole(){
-            var role = 0;
-            if (store.state.user != null){
-                role = store.state.user.role;
-            }
+<script lang="ts">
+import categoryServices from "@/services/categories.services";
+import useNotification from "@/logics/notification.logic";
+import { defineComponent, ref, onMounted } from "@vue/runtime-core";
+import CategoryItem from "@/models/category/categories";
+import { useRoute } from "vue-router";
+import Editor from "primevue/editor";
+import Card from "primevue/card";
 
-            return (role == "Admin" || role == "Manager");
-        },
-        goBack(){
-            this.$router.push("/getcategorybyid/" + this.$route.params.id);
-        }
+export default defineComponent({
+  components: {
+    Editor,
+    Card,
+  },
 
-	}  
-}
+  setup() {
+    const category = ref({} as CategoryItem);
+    const notification = useNotification();
+    const route = useRoute();
+    const categoryId = route.params.id.toString();
+    const isLoading = ref(false);
+    const updateCategory = () => {
+      categoryServices
+        .update(categoryId, category.value)
+        .then(() => notification.showMessage("Cập nhật thành công!"));
+    };
+
+    onMounted(() => {
+      isLoading.value = true;
+      categoryServices
+        .get(categoryId)
+        .then((response) => (category.value = response.data))
+        .finally(() => (isLoading.value = false));
+    });
+
+    return {
+      category,
+      categoryId,
+      isLoading,
+      updateCategory,
+    };
+  },
+});
 </script>
 
 <style scoped>
-    #padding-page {
-        margin-top: 40px;
-    }
 </style>
