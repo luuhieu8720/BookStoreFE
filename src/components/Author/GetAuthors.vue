@@ -1,61 +1,74 @@
-<template>     
-    <div class = "container">  
-		<h2 :style="{textAlign:'center', marginTop:'30px', marginBottom:'30px'}">Danh sách tác giả</h2>
-		<table class="table">  
-			<thead>  
-				<th :style="{paddingLeft:'8px'}">Id</th>  
-				<th :style="{paddingLeft:'8px'}">Tên tác giả</th>  
-				<th :style="{paddingLeft:'8px'}">Website</th>  
-				<th :style="{paddingLeft:'8px'}">Ngày sinh</th>  
-				<th></th>  
-			</thead>  
-			<tbody>  
-				<tr v-for="item in authors" :key="item.id">  
-					<td>{{ item.id }}</td>  
-					<td>{{ item.name }}</td>  
-					<td>{{ item.website }}</td>  
-					<td>{{ item.birthday }}</td>   
-					<td><input class="btn btn-success" type='button' value='Chi tiết' @click="detail(item.id)"/></td>
-				</tr>  
-			</tbody>  
-		</table>  
-    </div>  
-</template>  
+<template>
+  <Card>
+    <template #title>
+      <div style="text-align: center">Danh sách tác giả</div>
+    </template>
+    <template #content>
+      <DataTable :value="authors">
+        <Column field="id" header="ID" style="width: 70px" />
 
-<script>
-import authorsServices from '@/services/authors.services';
-import moment from 'moment'
-export default {  
-	name: 'GetAuthors',  
-		data() {
-			return {
-				authors: [],
-			};
-		},
-		created()  
-		{  
-			this.getAuthors();  
-		},  
-	
-	methods: { 
-		getAuthors() {
-            authorsServices.getAuthors().then(response =>
-                {
-					this.authors = response.data,
-					this.authors.forEach(author => author.birthday =  moment(String(author.birthday)).format('DD/MM/YYYY')),
-					console.log(this.authors)
-				}).catch(e => {  
-					console.log(e);  })
-		},
-		detail(authorId){
-			//localStorage['bookId'] = bookId;
-			this.$router.push('/getauthorbyid/' + authorId); 
-		}
-	} 
-} 
+        <Column field="name" header="Tên tác giả" style="width: 200px" />
+
+        <Column field="website" header="Website" style="width: 300px" />
+
+        <Column field="birthday" header="Ngày sinh" style="width: 200px" />
+
+        <Column field="id" header="Chi tiết">
+          <template #body="slotProps">
+            <router-link
+              :to="{ name: 'GetAuthor', params: { id: slotProps.data.id } }"
+            >
+              <Button class="btn btn-primary" label="Chi tiết" />
+            </router-link>
+          </template>
+        </Column>
+      </DataTable>
+    </template>
+  </Card>
+</template>
+
+<script lang="ts">
+import authorsServices from "@/services/authors.services";
+import { defineComponent, ref, onMounted } from "@vue/runtime-core";
+import moment from "moment";
+import AuthorItem from "@/models/author/author";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Card from "primevue/card";
+export default defineComponent({
+  components: {
+    DataTable,
+    Column,
+    Card,
+  },
+  setup() {
+    const authors = ref([] as AuthorItem[]);
+    const isLoading = ref(false);
+    onMounted(() => {
+      isLoading.value = true;
+      authorsServices
+        .getAuthors()
+        .then((response) => {
+          (authors.value = response.data),
+            authors.value.forEach(
+              (author) =>
+                (author.birthday = moment(String(author.birthday)).format(
+                  "DD/MM/YYYY"
+                ))
+            );
+        })
+        .finally(() => {
+          isLoading.value = false;
+        });
+    });
+    return {
+      authors,
+      isLoading,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 </style>
