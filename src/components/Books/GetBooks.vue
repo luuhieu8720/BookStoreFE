@@ -1,7 +1,9 @@
 <template>
   <div class="p-m-2">
     <Card>
-      <template #title> Kho sách </template>
+      <template #title>
+        <div style="text-align: center">Kho sách</div>
+      </template>
       <template #content>
         <DataTable :value="books" :loading="isLoading">
           <Column field="id" header="Id" />
@@ -12,7 +14,7 @@
           <Column>
             <template #body="slotProps">
               <router-link
-                :to="{ name: 'GetBookById', params: { id: slotProps.data.id } }"
+                :to="{ name: 'BookDetail', params: { id: slotProps.data.id } }"
               >
                 <Button class="btn btn-success" label="Chi tiết" />
               </router-link>
